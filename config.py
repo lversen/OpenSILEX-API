@@ -94,7 +94,7 @@ def example_basic_usage():
     from client import OpenSilexClient
     
     # Initialize client
-    client = OpenSilexClient("http://20.4.208.154:28081/api")
+    client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
         # Authenticate
@@ -126,7 +126,7 @@ def example_data_management():
     from client import OpenSilexClient
     from modules.data import DataSearchParams, DataPoint
     
-    client = OpenSilexClient("http://20.4.208.154:28081/api")
+    client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
         # Authenticate
@@ -175,7 +175,7 @@ def example_project_management():
     from client import OpenSilexClient
     from modules.projects import ProjectCreationData, ProjectSearchParams
     
-    client = OpenSilexClient("http://20.4.208.154:28081/api")
+    client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
         # Authenticate
@@ -220,7 +220,7 @@ def example_variable_management():
     from client import OpenSilexClient
     from modules.variables import VariableSearchParams, EntityCreationData
     
-    client = OpenSilexClient("http://20.4.208.154:28081/api")
+    client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
         # Authenticate
@@ -266,7 +266,7 @@ def example_context_manager():
     from client import OpenSilexClient
     
     # Using context manager ensures proper cleanup
-    with OpenSilexClient("http://20.4.208.154:28081/api") as client:
+    with OpenSilexClient("http://20.4.208.154:28081/rest") as client:
         # Authenticate
         auth_response = client.authenticate("admin@opensilex.org", "admin")
         
@@ -285,7 +285,7 @@ def example_error_handling():
     from client import OpenSilexClient
     from modules.base import APIException
     
-    client = OpenSilexClient("http://20.4.208.154:28081/api")
+    client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
         # Attempt authentication

@@ -20,7 +20,7 @@ class OpenSilexClient:
         Initialize the OpenSilex client
         
         Args:
-            base_url: Base URL of the OpenSilex API (e.g., 'https://your-opensilex.com/api')
+            base_url: Base URL of the OpenSilex API (e.g., 'https://your-opensilex.com/rest')
             timeout: Request timeout in seconds
         """
         # Initialize base client
