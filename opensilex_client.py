@@ -34,7 +34,14 @@ class SSHConfigParser:
             Dictionary mapping host names to their configurations
         """
         if config_path is None:
-            config_path = os.path.expanduser("~/.ssh/config")
+            # Handle both Unix and Windows paths
+            ssh_dir = Path.home() / ".ssh"
+            config_path = ssh_dir / "config"
+            
+            # On Windows, also check without dot
+            if not config_path.exists() and os.name == 'nt':
+                ssh_dir = Path.home() / "ssh"
+                config_path = ssh_dir / "config"
         
         hosts = {}
         current_host = None
@@ -55,8 +62,10 @@ class SSHConfigParser:
                     
                     # Parse host attributes
                     elif current_host and ' ' in line:
-                        key, value = line.split(None, 1)
-                        hosts[current_host][key.lower()] = value
+                        parts = line.split(None, 1)
+                        if len(parts) == 2:
+                            key, value = parts
+                            hosts[current_host][key.lower()] = value.strip()
         
         except FileNotFoundError:
             logger.warning(f"SSH config file not found: {config_path}")
@@ -95,8 +104,8 @@ class OpenSilexClient:
     """
     
     def __init__(self, base_url: str = None, 
-                 username: str = "guest@opensilex.org", 
-                 password: str = "guest",
+                 username: str = "admin@opensilex.org", 
+                 password: str = "admin",
                  ssh_host: str = None,
                  use_ssh_config: bool = True):
         """
@@ -140,10 +149,14 @@ class OpenSilexClient:
         
         # If no specific host given, try common names
         if ssh_host is None:
-            common_hosts = ['opensilex', 'opensilex-vm', 'opensilex-dev', 'vm']
+            common_hosts = [
+                'opensilex', 'opensilex-vm', 'opensilex-dev', 'vm',
+                'phis', 'phis-vm', 'phis-dev', 'phis-prod', 'phis-test'
+            ]
             for host in common_hosts:
                 if host in ssh_config:
                     ssh_host = host
+                    logger.info(f"Found SSH host '{host}' in config")
                     break
         
         if ssh_host and ssh_host in ssh_config:
@@ -153,7 +166,11 @@ class OpenSilexClient:
                 logger.info(f"Found VM IP from SSH config: {vm_ip}")
                 return base_url
         
-        logger.warning("Could not find VM configuration in SSH config")
+        if ssh_config:
+            available_hosts = list(ssh_config.keys())
+            logger.warning(f"Could not find VM configuration in SSH config. Available hosts: {available_hosts}")
+        else:
+            logger.warning("No SSH config found or empty config file")
         return None
     
     @classmethod
@@ -171,8 +188,8 @@ class OpenSilexClient:
         """
         return cls(
             base_url=None,
-            username=username or "guest@opensilex.org",
-            password=password or "guest",
+            username=username or "admin@opensilex.org",
+            password=password or "admin",
             ssh_host=ssh_host,
             use_ssh_config=True
         )
@@ -591,15 +608,16 @@ if __name__ == "__main__":
     client1 = OpenSilexClient()
     print(f"Base URL: {client1.base_url}")
     
-    # Example 2: Using specific SSH host
+    # Example 2: Using specific SSH host (e.g., phis-prod)
     print("\n=== Example 2: Specific SSH host ===")
-    client2 = OpenSilexClient.from_ssh_config(ssh_host="opensilex-vm")
+    # For your case, use:
+    client2 = OpenSilexClient.from_ssh_config(ssh_host="phis-prod")
     print(f"Base URL: {client2.base_url}")
     
     # Example 3: Manual URL (bypassing SSH config)
     print("\n=== Example 3: Manual URL ===")
     client3 = OpenSilexClient(
-        base_url="http://192.168.1.100:28081/app/rest",
+        base_url="http://20.4.208.154:28081/app/rest",
         use_ssh_config=False
     )
     print(f"Base URL: {client3.base_url}")
