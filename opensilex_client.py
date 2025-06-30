@@ -162,7 +162,7 @@ class OpenSilexClient:
         if ssh_host and ssh_host in ssh_config:
             vm_ip = SSHConfigParser.get_host_ip(ssh_host, ssh_config)
             if vm_ip:
-                base_url = f"http://{vm_ip}:28081/app/rest"
+                base_url = f"http://{vm_ip}:28081/rest"
                 logger.info(f"Found VM IP from SSH config: {vm_ip}")
                 return base_url
         
@@ -617,7 +617,7 @@ if __name__ == "__main__":
     # Example 3: Manual URL (bypassing SSH config)
     print("\n=== Example 3: Manual URL ===")
     client3 = OpenSilexClient(
-        base_url="http://20.4.208.154:28081/app/rest",
+        base_url="http://20.4.208.154:28081/rest",
         use_ssh_config=False
     )
     print(f"Base URL: {client3.base_url}")
