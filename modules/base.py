@@ -78,7 +78,7 @@ class BaseAPIClient:
             logger.addHandler(handler)
             logger.setLevel(logging.INFO)
         return logger
-    
+
     def authenticate(self, identifier: str, password: str) -> APIResponse:
         """
         Authenticate with the OpenSilex API
@@ -104,8 +104,16 @@ class BaseAPIClient:
             )
             
             if response.success and response.data:
-                # Extract token from response
-                token = response.data.get('access_token')
+                # Debug: Log what we received
+                self.logger.debug(f"Auth response data type: {type(response.data)}")
+                self.logger.debug(f"Auth response data: {response.data}")
+                
+                # The token should be directly in response.data since _parse_response
+                # already extracted the 'result' field
+                token = None
+                if isinstance(response.data, dict):
+                    token = response.data.get('token')
+                
                 if token:
                     self.auth_token = token
                     self.session.headers['Authorization'] = f"Bearer {token}"
@@ -116,12 +124,14 @@ class BaseAPIClient:
                         status_code=response.status_code,
                         message="Authentication successful"
                     )
+                else:
+                    self.logger.error(f"No token found in response data: {response.data}")
             
             return APIResponse(
                 success=False,
                 data=None,
                 status_code=response.status_code,
-                message="Authentication failed"
+                message="Authentication failed: No token in response"
             )
             
         except Exception as e:
@@ -208,21 +218,38 @@ class BaseAPIClient:
         # Extract error information if available
         errors = []
         message = None
+        data = response_data
         
         if isinstance(response_data, dict):
-            if 'error' in response_data:
-                errors.append(response_data['error'])
-            if 'message' in response_data:
-                message = response_data['message']
-            if 'result' in response_data:
-                response_data = response_data['result']
+            # Handle OpenSILEX response structure
+            if 'metadata' in response_data and 'result' in response_data:
+                # This is a standard OpenSILEX response
+                metadata = response_data.get('metadata', {})
+                result = response_data.get('result')
+                
+                # The result IS the data we want
+                data = result
+                
+                # Check for errors in metadata
+                if 'status' in metadata and isinstance(metadata['status'], list):
+                    for status in metadata['status']:
+                        if 'message' in status:
+                            errors.append(status['message'])
+            else:
+                # Handle other response formats (non-OpenSILEX standard)
+                if 'error' in response_data:
+                    errors.append(response_data['error'])
+                if 'message' in response_data:
+                    message = response_data['message']
+                # Note: We don't extract 'result' here because this is not
+                # the OpenSILEX format (no metadata field)
         
         if not success and not errors:
             errors.append(f"HTTP {response.status_code}: {response.reason}")
         
         return APIResponse(
             success=success,
-            data=response_data,
+            data=data,
             status_code=response.status_code,
             message=message,
             errors=errors if errors else None

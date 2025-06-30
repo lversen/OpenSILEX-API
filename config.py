@@ -178,8 +178,15 @@ def example_project_management():
     client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
-        # Authenticate
-        client.authenticate("admin@opensilex.org", "admin")
+        # Authenticate and CHECK if successful
+        auth_response = client.authenticate("admin@opensilex.org", "admin")
+        
+        if not auth_response.success:
+            print(f"Authentication failed: {auth_response.message}")
+            print(f"Errors: {auth_response.errors}")
+            return
+        
+        print("Authentication successful!")
         
         # Search for projects
         search_params = ProjectSearchParams(
@@ -194,6 +201,8 @@ def example_project_management():
             
             for project in projects_response.data:
                 print(f"Project: {project.get('name')}")
+        else:
+            print(f"Project search failed: {projects_response.message}")
         
         # Create a new project
         new_project = ProjectCreationData(
@@ -208,6 +217,8 @@ def example_project_management():
         create_response = client.projects.create_project(new_project)
         if create_response.success:
             print(f"Project created with URI: {create_response.data}")
+        else:
+            print(f"Failed to create project: {create_response.message}")
     
     finally:
         client.logout()
@@ -223,8 +234,15 @@ def example_variable_management():
     client = OpenSilexClient("http://20.4.208.154:28081/rest")
     
     try:
-        # Authenticate
-        client.authenticate("admin@opensilex.org", "admin")
+        # Authenticate and CHECK if successful
+        auth_response = client.authenticate("admin@opensilex.org", "admin")
+        
+        if not auth_response.success:
+            print(f"Authentication failed: {auth_response.message}")
+            print(f"Errors: {auth_response.errors}")
+            return
+        
+        print("Authentication successful!")
         
         # Search for variables
         search_params = VariableSearchParams(
@@ -238,6 +256,8 @@ def example_variable_management():
             
             for variable in variables_response.data:
                 print(f"Variable: {variable.get('name')}")
+        else:
+            print(f"Variable search failed: {variables_response.message}")
         
         # Get variable data types
         datatypes_response = client.variables.get_variable_datatypes()
@@ -254,6 +274,8 @@ def example_variable_management():
         create_response = client.variables.create_entity(new_entity)
         if create_response.success:
             print(f"Entity created with URI: {create_response.data}")
+        else:
+            print(f"Failed to create entity: {create_response.message}")
     
     finally:
         client.logout()
