@@ -63,6 +63,8 @@ class ScientificObjectSearchParams:
     page_size: int = 20
 
 
+from urllib.parse import quote
+
 class ProjectsClient:
     """
     Client for managing projects and experiments in OpenSilex
@@ -116,7 +118,7 @@ class ProjectsClient:
         Returns:
             APIResponse with project details
         """
-        return self.client.get(f'/core/projects/{uri}')
+        return self.client.get(f'/core/projects/{quote(uri, safe='')}')
     
     def get_projects_by_uris(self, uris: List[str]) -> APIResponse:
         """

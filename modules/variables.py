@@ -104,6 +104,8 @@ class VariablesClient:
         Returns:
             APIResponse with created variable URI
         """
+        if 'dataType' in variable_data and isinstance(variable_data['dataType'], str):
+            variable_data['dataType'] = {'uri': variable_data['dataType']}
         return self.client.post('/core/variables', data=variable_data)
     
     def update_variable(self, variable_data: Dict[str, Any]) -> APIResponse:

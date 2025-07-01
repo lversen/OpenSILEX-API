@@ -165,7 +165,7 @@ class DataClient:
             
             data_list.append(point_data)
         
-        return self.client.post('/core/data', data={'data': data_list})
+        return self.client.post('/core/data', data=data_list)
     
     def update_data_confidence(self, uri: str, confidence: float) -> APIResponse:
         """

@@ -164,7 +164,7 @@ class BaseAPIClient:
         if require_auth and not self.auth_token:
             raise APIException("Authentication required. Please authenticate first.")
         
-        url = urljoin(self.base_url, endpoint.lstrip('/'))
+        url = f"{self.base_url}/{endpoint.lstrip('/')}"
         
         # Prepare headers
         headers = self.session.headers.copy()
@@ -195,15 +195,6 @@ class BaseAPIClient:
             raise APIException(f"Request failed: {str(e)}")
     
     def _parse_response(self, response: requests.Response) -> APIResponse:
-        """
-        Parse HTTP response into APIResponse object
-        
-        Args:
-            response: requests.Response object
-            
-        Returns:
-            APIResponse object
-        """
         try:
             # Try to parse JSON response
             if response.headers.get('content-type', '').startswith('application/json'):
@@ -221,30 +212,27 @@ class BaseAPIClient:
         data = response_data
         
         if isinstance(response_data, dict):
-            # Handle OpenSILEX response structure
+            # Handle OpenSILEX standard response with metadata
             if 'metadata' in response_data and 'result' in response_data:
-                # This is a standard OpenSILEX response
                 metadata = response_data.get('metadata', {})
-                result = response_data.get('result')
+                data = response_data.get('result')  # Extract result
                 
-                # The result IS the data we want
-                data = result
-                
-                # Check for errors in metadata
                 if 'status' in metadata and isinstance(metadata['status'], list):
                     for status in metadata['status']:
                         if 'message' in status:
                             errors.append(status['message'])
+            # Handle responses that just have a 'result' field (like authentication)
+            elif 'result' in response_data:
+                data = response_data.get('result')
             else:
-                # Handle other response formats (non-OpenSILEX standard)
+                # Handle other non-standard JSON formats
                 if 'error' in response_data:
                     errors.append(response_data['error'])
                 if 'message' in response_data:
                     message = response_data['message']
-                # Note: We don't extract 'result' here because this is not
-                # the OpenSILEX format (no metadata field)
-        
+
         if not success and not errors:
+            # Fallback error message if none was parsed from the response body
             errors.append(f"HTTP {response.status_code}: {response.reason}")
         
         return APIResponse(
@@ -273,28 +261,20 @@ class BaseAPIClient:
     
     def logout(self) -> APIResponse:
         """
-        Logout and clear authentication
+        Logout and clear authentication (client-side).
+        This method clears the local token and session data without making a server call.
         """
         if self.auth_token:
-            try:
-                response = self.post("/security/logout")
-                self.auth_token = None
-                if 'Authorization' in self.session.headers:
-                    del self.session.headers['Authorization']
-                self.logger.info("Logout successful")
-                return response
-            except Exception as e:
-                self.logger.error(f"Logout error: {str(e)}")
-                # Clear token even if logout fails
-                self.auth_token = None
-                if 'Authorization' in self.session.headers:
-                    del self.session.headers['Authorization']
+            self.auth_token = None
+            if 'Authorization' in self.session.headers:
+                del self.session.headers['Authorization']
+            self.logger.info("Client-side logout successful. Token has been cleared.")
         
         return APIResponse(
             success=True,
             data=None,
             status_code=200,
-            message="Logged out"
+            message="Logout successful (client-side)"
         )
     
     def is_authenticated(self) -> bool:

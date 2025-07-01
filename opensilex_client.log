@@ -1,2 +1,12 @@
 2025-06-30 14:03:08,846 - modules.base.BaseAPIClient - ERROR - Request failed: HTTPSConnectionPool(host='your-opensilex-instance.com', port=443): Max retries exceeded with url: /security/authenticate (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000203AEF4F8F0>: Failed to resolve 'your-opensilex-instance.com' ([Errno 11001] getaddrinfo failed)"))
 2025-06-30 14:03:08,846 - modules.base.BaseAPIClient - ERROR - Authentication error: Request failed: HTTPSConnectionPool(host='your-opensilex-instance.com', port=443): Max retries exceeded with url: /security/authenticate (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x00000203AEF4F8F0>: Failed to resolve 'your-opensilex-instance.com' ([Errno 11001] getaddrinfo failed)"))
+2025-07-01 12:28:17,794 - modules.base.BaseAPIClient - INFO - Authentication successful
+2025-07-01 12:28:17,938 - modules.base.BaseAPIClient - INFO - Client-side logout successful. Token has been cleared.
+2025-07-01 12:28:18,627 - modules.base.BaseAPIClient - INFO - Authentication successful
+2025-07-01 12:28:18,786 - modules.base.BaseAPIClient - INFO - Client-side logout successful. Token has been cleared.
+2025-07-01 12:28:19,402 - modules.base.BaseAPIClient - INFO - Authentication successful
+2025-07-01 12:28:19,697 - modules.base.BaseAPIClient - INFO - Client-side logout successful. Token has been cleared.
+2025-07-01 12:28:20,364 - modules.base.BaseAPIClient - INFO - Authentication successful
+2025-07-01 12:28:20,649 - modules.base.BaseAPIClient - INFO - Client-side logout successful. Token has been cleared.
+2025-07-01 12:28:21,247 - modules.base.BaseAPIClient - INFO - Authentication successful
+2025-07-01 12:28:21,300 - modules.base.BaseAPIClient - INFO - Client-side logout successful. Token has been cleared.

@@ -1,0 +1,17 @@
+1	experiment	target	device	date *	uri:variable1 *	uri:variable...	Annotation
+2	Experiment name or URI	Target (ex: scientific object) name or URI	Device name or URI	Acquisition date of the data (format: AAAA-MM-DDTHH:mm:ssZ or AAAA-MM-DD)	Variable 1 name	Other variables names	Annotation (On the target object)
+3	Column data type: Short string	Column data type: Short string	Column data type: Short string	Column data type: Date
+Required : yes	Column data type: Short string, Integer number, Boolean, Date	Column data type: Short string, Integer number, Boolean, Date	Column data type: String
+4	You can insert data from this row.
+First three rows of CSV content will be ignored.
+The "experiment", "target" and "device" columns are optional. You can remove them. In all three columns, you can give URIs or names.
+Target can be a scientific object, a facility or an event.
+If a device is already defined in the provenance, then it is not necessary to add the device column to the file. If there is no device in the selected provenance, then it is mandatory to fill the "device" or the "target" column.
+If needed, you can duplicate the columns "experiment" or "device" to link your data to several experiments or devices.
+If needed, you can add a "raw_data" column to the right of each variable column. (see template generation)
+Accepted CSV separators : Comma (,) or Semicolon (;)
+Decimal separator is "."
+If you don't specify offsets of date, the system will use the default timezone of the system.
+Blank values will be ignored.
+Specials values authorized : NA, null and NaN for decimal
+The Annotation column will link an annotation to the Target or Scientific Object of the same row.

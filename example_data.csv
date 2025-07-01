@@ -1,0 +1,5 @@
+1,experiment,target,device,date *,http://www.opensilex.org/id/variables/mock_variable,Annotation
+2,Experiment name or URI,Target (ex: scientific object) name or URI,Device name or URI,Acquisition date of the data (format: AAAA-MM-DDTHH:mm:ssZ or AAAA-MM-DD),Variable 1 name,Annotation (On the target object)
+3,Column data type: Short string,Column data type: Short string,Column data type: Short string,Column data type: Date,Required : yes,Column data type: Short string, Integer number, Boolean, Date,Column data type: String
+Experiment A,http://www.opensilex.org/id/scientific-objects/so1,,2024-01-01T10:00:00Z,10.5,
+Experiment A,http://www.opensilex.org/id/scientific-objects/so1,,2024-01-02T11:00:00Z,11.2,
