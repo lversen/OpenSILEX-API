@@ -2,10 +2,16 @@ from client import OpenSilexClient
 from modules.variables import VariableSearchParams
 from modules.projects import ProjectSearchParams
 from modules.data import DataSearchParams
+from config import get_opensilex_base_url, select_opensilex_host_interactively
 
 def main():
+    # Allow user to select host
+    host_name = select_opensilex_host_interactively()
+    if not host_name:
+        return
+
     # Initialize client
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url(host_name))
 
     # Authenticate
     auth_response = client.authenticate("admin@opensilex.org", "admin")

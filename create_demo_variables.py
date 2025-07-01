@@ -34,74 +34,11 @@ from opensilexClientToolsPython.models.characteristic_creation_dto import Charac
 from opensilexClientToolsPython.models.method_creation_dto import MethodCreationDTO
 from opensilexClientToolsPython.models.unit_creation_dto import UnitCreationDTO
 import sys
-from get_host import SSHConfigParser
+from config import get_opensilex_base_url, select_opensilex_host_interactively, select_opensilex_host_interactively
 
-def get_ssh_config_hosts():
-    """Get all available hosts from SSH config"""
-    try:
-        ssh_parser = SSHConfigParser()
-        return ssh_parser.get_all_hosts(), ssh_parser
-    except Exception as e:
-        print(f"⚠️ Error reading SSH config: {e}")
-        return {}, None
 
-def select_host_from_ssh_config():
-    """Interactive host selection from SSH config"""
-    hosts, ssh_parser = get_ssh_config_hosts()
-    
-    if not hosts:
-        print("❌ No hosts found in SSH config")
-        print("Please configure your OpenSilex hosts in ~/.ssh/config")
-        print("\nExample SSH config entry:")
-        print("Host my-opensilex")
-        print("    HostName 192.168.1.100")
-        print("    Port 28081")
-        sys.exit(1)
-    
-    print("📋 Available OpenSilex hosts from SSH config:")
-    print("=" * 50)
-    
-    host_list = list(hosts.keys())
-    for i, host_name in enumerate(host_list, 1):
-        host_config = hosts[host_name]
-        hostname = host_config.get('hostname', host_name)
-        port = host_config.get('port', '28081')
-        print(f"{i}. {host_name}")
-        print(f"   Hostname: {hostname}")
-        print(f"   Port: {port}")
-        print()
-    
-    while True:
-        try:
-            choice = input(f"Select host (1-{len(host_list)}) or 'q' to quit: ").strip()
-            
-            if choice.lower() == 'q':
-                print("Exiting...")
-                sys.exit(0)
-            
-            choice_num = int(choice)
-            if 1 <= choice_num <= len(host_list):
-                selected_host = host_list[choice_num - 1]
-                return selected_host, hosts[selected_host]
-            else:
-                print(f"Please enter a number between 1 and {len(host_list)}")
-                
-        except ValueError:
-            print("Please enter a valid number or 'q' to quit")
-        except KeyboardInterrupt:
-            print("\nExiting...")
-            sys.exit(0)
 
-def construct_opensilex_url(host_name, host_config):
-    """Construct OpenSilex API URL from SSH config"""
-    hostname = host_config.get('hostname', host_name)
-    port = host_config.get('port', '28081')
-    
-    # Construct the OpenSilex API URL
-    api_url = f"http://{hostname}:{port}/sandbox/rest"
-    
-    print(f"🔗 Constructed API URL: {api_url}")
-    return api_url
+
 
 def get_credentials():
     """Get OpenSilex credentials from user"""
@@ -575,16 +512,10 @@ def main():
     print("=" * 60)
     
     # Select host from SSH config
-    hosts, ssh_parser = get_ssh_config_hosts()
-    if not hosts:
-        print("❌ No hosts found in SSH config")
-        sys.exit(1)
-
-    host_name = list(hosts.keys())[0]
-    host_config = hosts[host_name]
+    host_name = select_opensilex_host_interactively()
     
     # Construct OpenSilex API URL
-    api_url = construct_opensilex_url(host_name, host_config)
+    api_url = get_opensilex_base_url(host_name)
     
     # Get credentials
     identifier = "admin@opensilex.org"

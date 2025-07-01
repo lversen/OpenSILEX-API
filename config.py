@@ -9,9 +9,67 @@ import logging
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, asdict
 from pathlib import Path
+from get_host import SSHConfigParser
 
+def get_opensilex_base_url(host_name: str = "phis-prod") -> str:
+    """
+    Retrieves the OpenSilex base URL from SSH config.
+    Defaults to 'opensilex-vm' host.
+    """
+    ssh_parser = SSHConfigParser()
+    host_config = ssh_parser.get_host(host_name)
+    if not host_config:
+        raise ValueError(f"Host '{host_name}' not found in SSH config. Please configure it in ~/.ssh/config")
+    
+    hostname = host_config.get('hostname', host_name)
+    port = host_config.get('port', '28081')
+    # Assuming the OpenSilex API is at /rest or /sandbox/rest
+    # Adjust this path based on your OpenSilex instance's configuration
+    return f"http://{hostname}:{port}/rest"
 
-@dataclass
+def select_opensilex_host_interactively() -> str:
+    """
+    Interactively prompts the user to select an OpenSilex host from SSH config.
+    """
+    ssh_parser = SSHConfigParser()
+    hosts = ssh_parser.get_all_hosts()
+
+    if not hosts:
+        raise ValueError("No hosts found in SSH config. Please configure them in ~/.ssh/config")
+
+    print("\n📋 Available OpenSilex hosts from SSH config:")
+    print("=" * 50)
+
+    host_list = list(hosts.keys())
+    for i, host_name in enumerate(host_list, 1):
+        host_config = hosts[host_name]
+        hostname = host_config.get('hostname', host_name)
+        port = host_config.get('port', '28081')
+        print(f"{i}. {host_name}")
+        print(f"   Hostname: {hostname}")
+        print(f"   Port: {port}")
+        print()
+
+    while True:
+        try:
+            choice = input(f"Select host (1-{len(host_list)}) or 'q' to quit: ").strip()
+
+            if choice.lower() == 'q':
+                print("Exiting...")
+                exit(0)
+
+            choice_num = int(choice)
+            if 1 <= choice_num <= len(host_list):
+                selected_host = host_list[choice_num - 1]
+                return selected_host
+            else:
+                print(f"Please enter a number between 1 and {len(host_list)}")
+
+        except ValueError:
+            print("Please enter a valid number or 'q' to quit")
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            exit(0)
 class OpenSilexConfig:
     """Configuration class for OpenSilex API client"""
     base_url: str
@@ -94,7 +152,7 @@ def example_basic_usage():
     from client import OpenSilexClient
     
     # Initialize client
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url())
     
     try:
         # Authenticate
@@ -126,7 +184,7 @@ def example_data_management():
     from client import OpenSilexClient
     from modules.data import DataSearchParams, DataPoint
     
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url())
     
     try:
         # Authenticate
@@ -175,7 +233,7 @@ def example_project_management():
     from client import OpenSilexClient
     from modules.projects import ProjectCreationData, ProjectSearchParams
     
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url())
     
     try:
         # Authenticate and CHECK if successful
@@ -231,7 +289,7 @@ def example_variable_management():
     from client import OpenSilexClient
     from modules.variables import VariableSearchParams, EntityCreationData
     
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url())
     
     try:
         # Authenticate and CHECK if successful
@@ -307,7 +365,7 @@ def example_error_handling():
     from client import OpenSilexClient
     from modules.base import APIException
     
-    client = OpenSilexClient("http://20.4.208.154:28081/rest")
+    client = OpenSilexClient(get_opensilex_base_url())
     
     try:
         # Attempt authentication

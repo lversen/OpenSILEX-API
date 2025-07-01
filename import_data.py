@@ -6,6 +6,7 @@ from client import OpenSilexClient
 from modules.data import DataPoint, ProvenanceSearchParams
 from modules.variables import VariableSearchParams
 from modules.projects import ScientificObjectSearchParams
+from config import get_opensilex_base_url, select_opensilex_host_interactively
 
 def import_csv_data(client: OpenSilexClient, file_path: str):
     # Fetch a valid scientific object URI to be used as the target for data points
@@ -119,8 +120,11 @@ def main():
     parser.add_argument("file_path", help="The full path to the CSV file to import.")
     args = parser.parse_args()
 
-    #client = OpenSilexClient("http://20.4.208.154:28081/rest")
-    client = OpenSilexClient("http://20.4.226.32:28081/phis/rest")
+    host_name = select_opensilex_host_interactively()
+    if not host_name:
+        return
+
+    client = OpenSilexClient(get_opensilex_base_url(host_name))
     auth_response = client.authenticate("admin@opensilex.org", "admin")
     if not auth_response.success:
         print(f"Authentication failed: {auth_response.message}")
