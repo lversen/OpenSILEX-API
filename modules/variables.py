@@ -255,3 +255,33 @@ class VariablesClient:
         """
         params = {'uris': uris}
         return self.client.get('/core/entities/by_uris', params=params)
+
+    # Methods for other concepts (characteristics, methods, units)
+    def _search_concept(self, concept_type: str, name: Optional[str] = None, page: int = 0, page_size: int = 20) -> APIResponse:
+        """Generic search for concepts like characteristics, methods, units"""
+        params = {'page': page, 'page_size': page_size}
+        if name:
+            params['name'] = name
+        return self.client.get(f'/core/{concept_type}', params=params)
+
+    def _create_concept(self, concept_type: str, data: Dict[str, Any]) -> APIResponse:
+        """Generic create for concepts"""
+        return self.client.post(f'/core/{concept_type}', data=data)
+
+    def search_characteristics(self, name: Optional[str] = None, page: int = 0, page_size: int = 20) -> APIResponse:
+        return self._search_concept('characteristics', name, page, page_size)
+
+    def create_characteristic(self, data: Dict[str, Any]) -> APIResponse:
+        return self._create_concept('characteristics', data)
+
+    def search_methods(self, name: Optional[str] = None, page: int = 0, page_size: int = 20) -> APIResponse:
+        return self._search_concept('methods', name, page, page_size)
+
+    def create_method(self, data: Dict[str, Any]) -> APIResponse:
+        return self._create_concept('methods', data)
+
+    def search_units(self, name: Optional[str] = None, page: int = 0, page_size: int = 20) -> APIResponse:
+        return self._search_concept('units', name, page, page_size)
+
+    def create_unit(self, data: Dict[str, Any]) -> APIResponse:
+        return self._create_concept('units', data)

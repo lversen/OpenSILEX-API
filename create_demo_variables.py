@@ -379,7 +379,7 @@ def create_basic_concepts(variables_api, existing_concepts=None):
     # Create entities
     print("\n📦 Creating entities...")
     for entity_data in basic_entities:
-        existing_uri = find_existing_concept(existing_concepts['entities'], entity_data['name'])
+        existing_uri = find_existing_concept(existing_concepts.get('entities', []), entity_data['name'])
         if existing_uri:
             created_concepts['entities'].append({'name': entity_data['name'], 'uri': existing_uri})
             print(f"  ✓ Reusing existing entity: {entity_data['name']} -> {existing_uri}")
@@ -399,7 +399,7 @@ def create_basic_concepts(variables_api, existing_concepts=None):
     # Create characteristics
     print("\n🔬 Creating characteristics...")
     for char_data in basic_characteristics:
-        existing_uri = find_existing_concept(existing_concepts['characteristics'], char_data['name'])
+        existing_uri = find_existing_concept(existing_concepts.get('characteristics', []), char_data['name'])
         if existing_uri:
             created_concepts['characteristics'].append({'name': char_data['name'], 'uri': existing_uri})
             print(f"  ✓ Reusing existing characteristic: {char_data['name']} -> {existing_uri}")
@@ -419,7 +419,7 @@ def create_basic_concepts(variables_api, existing_concepts=None):
     # Create methods
     print("\n⚙️ Creating methods...")
     for method_data in basic_methods:
-        existing_uri = find_existing_concept(existing_concepts['methods'], method_data['name'])
+        existing_uri = find_existing_concept(existing_concepts.get('methods', []), method_data['name'])
         if existing_uri:
             created_concepts['methods'].append({'name': method_data['name'], 'uri': existing_uri})
             print(f"  ✓ Reusing existing method: {method_data['name']} -> {existing_uri}")
@@ -439,7 +439,7 @@ def create_basic_concepts(variables_api, existing_concepts=None):
     # Create units
     print("\n📏 Creating units...")
     for unit_data in basic_units:
-        existing_uri = find_existing_concept(existing_concepts['units'], unit_data['name'])
+        existing_uri = find_existing_concept(existing_concepts.get('units', []), unit_data['name'])
         if existing_uri:
             created_concepts['units'].append({'name': unit_data['name'], 'uri': existing_uri})
             print(f"  ✓ Reusing existing unit: {unit_data['name']} -> {existing_uri}")
@@ -504,7 +504,7 @@ def create_demo_variables(variables_api, created_concepts):
     
     if plant_uri and height_uri and manual_uri and cm_uri:
         demo_variables.append({
-            'name': 'Plant Height Manual',
+            'name': 'Mock Variable for Import',
             'description': 'Plant height measured manually',
             'entity': plant_uri,
             'characteristic': height_uri,
@@ -575,13 +575,20 @@ def main():
     print("=" * 60)
     
     # Select host from SSH config
-    host_name, host_config = select_host_from_ssh_config()
+    hosts, ssh_parser = get_ssh_config_hosts()
+    if not hosts:
+        print("❌ No hosts found in SSH config")
+        sys.exit(1)
+
+    host_name = list(hosts.keys())[0]
+    host_config = hosts[host_name]
     
     # Construct OpenSilex API URL
     api_url = construct_opensilex_url(host_name, host_config)
     
     # Get credentials
-    identifier, password = get_credentials()
+    identifier = "admin@opensilex.org"
+    password = "admin"
     
     print(f"\n🚀 Connecting to OpenSilex...")
     print(f"Host: {host_name}")
@@ -599,39 +606,6 @@ def main():
     # Get existing concepts
     print("\n🔍 Checking for existing concepts...")
     existing_concepts = get_existing_concepts(variables_api)
-
-    if existing_concepts:
-        list_existing_concepts(variables_api)
-        print("\n⚠️ Concepts already exist in the system.")
-        while True:
-            try:
-                choice = input("\nChoose an option:\n1. Use existing concepts and create new ones if needed\n2. Exit without changes\nChoice (1/2): ").strip()
-                if choice == "1":
-                    print("Proceeding with existing concepts...")
-                    break
-                elif choice == "2":
-                    print("Exiting without changes.")
-                    sys.exit(0)
-                else:
-                    print("Please enter 1 or 2")
-            except KeyboardInterrupt:
-                print("\nExiting...")
-                sys.exit(0)
-    else:
-        print("📭 No concepts found in the system.")
-        while True:
-            try:
-                response = input("\nWould you like to create basic demo concepts and variables? (y/n): ").strip().lower()
-                if response == 'n':
-                    print("Exiting without creating anything.")
-                    sys.exit(0)
-                elif response == 'y':
-                    break
-                else:
-                    print("Please enter 'y' or 'n'")
-            except KeyboardInterrupt:
-                print("\nExiting...")
-                sys.exit(0)
 
     # Create basic concepts (reusing existing ones if found)
     created_concepts = create_basic_concepts(variables_api, existing_concepts)

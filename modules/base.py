@@ -56,7 +56,7 @@ class BaseAPIClient:
         self.base_url = base_url.rstrip('/')
         self.timeout = timeout
         self.session = requests.Session()
-        self.auth_token: Optional[str] = None
+        self.token: Optional[str] = None
         self.logger = self._setup_logger()
         
         # Set default headers
@@ -115,7 +115,7 @@ class BaseAPIClient:
                     token = response.data.get('token')
                 
                 if token:
-                    self.auth_token = token
+                    self.token = token
                     self.session.headers['Authorization'] = f"Bearer {token}"
                     self.logger.info("Authentication successful")
                     return APIResponse(
@@ -161,7 +161,7 @@ class BaseAPIClient:
         Returns:
             APIResponse object
         """
-        if require_auth and not self.auth_token:
+        if require_auth and not self.token:
             raise APIException("Authentication required. Please authenticate first.")
         
         url = f"{self.base_url}/{endpoint.lstrip('/')}"
@@ -264,8 +264,8 @@ class BaseAPIClient:
         Logout and clear authentication (client-side).
         This method clears the local token and session data without making a server call.
         """
-        if self.auth_token:
-            self.auth_token = None
+        if self.token:
+            self.token = None
             if 'Authorization' in self.session.headers:
                 del self.session.headers['Authorization']
             self.logger.info("Client-side logout successful. Token has been cleared.")
@@ -279,4 +279,4 @@ class BaseAPIClient:
     
     def is_authenticated(self) -> bool:
         """Check if client is authenticated"""
-        return self.auth_token is not None
+        return self.token is not None

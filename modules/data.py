@@ -138,35 +138,6 @@ class DataClient:
         
         return self.client.post('/core/data/search', data=data)
     
-    def create_data(self, data_points: List[DataPoint]) -> APIResponse:
-        """
-        Create new data points
-        
-        Args:
-            data_points: List of data points to create
-            
-        Returns:
-            APIResponse confirming data creation
-        """
-        data_list = []
-        for point in data_points:
-            point_data = {
-                'target': point.target,
-                'variable': point.variable,
-                'date': point.date,
-                'value': point.value
-            }
-            if point.confidence is not None:
-                point_data['confidence'] = point.confidence
-            if point.provenance:
-                point_data['provenance'] = point.provenance
-            if point.metadata:
-                point_data['metadata'] = point.metadata
-            
-            data_list.append(point_data)
-        
-        return self.client.post('/core/data', data=data_list)
-    
     def update_data_confidence(self, uri: str, confidence: float) -> APIResponse:
         """
         Update confidence value for a data point
