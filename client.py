@@ -8,6 +8,8 @@ from modules.base import BaseAPIClient, APIResponse
 from modules.variables import VariablesClient
 from modules.data import DataClient
 from modules.projects import ProjectsClient
+from modules.devices import DevicesClient
+from modules.organizations import OrganizationsClient
 
 
 class OpenSilexClient:
@@ -30,6 +32,8 @@ class OpenSilexClient:
         self.variables = VariablesClient(self.base_client)
         self.data = DataClient(self.base_client)
         self.projects = ProjectsClient(self.base_client)
+        self.devices = DevicesClient(self.base_client)
+        self.organizations = OrganizationsClient(self.base_client)
     
     def authenticate(self, identifier: str, password: str) -> APIResponse:
         """

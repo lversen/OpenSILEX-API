@@ -11,7 +11,7 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from get_host import SSHConfigParser
 
-def get_opensilex_base_url(host_name: Optional[str] = None) -> str:
+def get_opensilex_base_url(host_name: Optional[str] = None, non_interactive: bool = False) -> str:
     """
     Retrieves the OpenSilex base URL from SSH config.
     If host_name is not provided or not found, it interactively prompts the user to select a host.
@@ -23,9 +23,9 @@ def get_opensilex_base_url(host_name: Optional[str] = None) -> str:
         host_config = ssh_parser.get_host(selected_host_name)
         if not host_config:
             print(f"Host '{selected_host_name}' not found in SSH config. Prompting for interactive selection.")
-            selected_host_name = select_opensilex_host_interactively()
+            selected_host_name = select_opensilex_host_interactively(non_interactive=non_interactive)
     else:
-        selected_host_name = select_opensilex_host_interactively()
+        selected_host_name = select_opensilex_host_interactively(non_interactive=non_interactive)
 
     if not selected_host_name:
         raise ValueError("No host selected. Exiting.")
@@ -41,7 +41,7 @@ def get_opensilex_base_url(host_name: Optional[str] = None) -> str:
     # Adjust this path based on your OpenSilex instance's configuration
     return f"http://{hostname}:{port}/rest"
 
-def select_opensilex_host_interactively() -> str:
+def select_opensilex_host_interactively(non_interactive: bool = False) -> str:
     """
     Interactively prompts the user to select an OpenSilex host from SSH config.
     """
@@ -50,6 +50,9 @@ def select_opensilex_host_interactively() -> str:
 
     if not hosts:
         raise ValueError("No hosts found in SSH config. Please configure them in ~/.ssh/config")
+
+    if non_interactive:
+        return list(hosts.keys())[0]
 
     print("\n📋 Available OpenSilex hosts from SSH config:")
     print("=" * 50)

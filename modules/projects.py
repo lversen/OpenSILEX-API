@@ -50,6 +50,33 @@ class ExperimentSearchParams:
 
 
 @dataclass
+class ExperimentCreationData:
+    """Data structure for creating experiments"""
+    uri: Optional[str] = None
+    name: str = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    description: Optional[str] = None
+    objective: Optional[str] = None
+    project: Optional[str] = None
+    is_public: bool = False
+    contacts: Optional[List[Dict[str, Any]]] = None
+    technical_supervisors: Optional[List[str]] = None
+    scientific_supervisors: Optional[List[str]] = None
+    groups: Optional[List[str]] = None
+
+
+@dataclass
+class ScientificObjectCreationData:
+    """Data structure for creating scientific objects"""
+    uri: Optional[str] = None
+    name: str = None
+    rdf_type: str = None
+    experiment: str = None
+    relations: Optional[List[Dict[str, Any]]] = None
+
+
+@dataclass
 class ScientificObjectSearchParams:
     """Parameters for scientific object search"""
     name: Optional[str] = None
