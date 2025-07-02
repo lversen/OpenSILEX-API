@@ -6,6 +6,10 @@ Handles variables, entities, and related data types
 from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass
 from .base import BaseAPIClient, APIResponse
+from urllib.parse import quote
+
+from urllib.parse import quote
+
 
 
 @dataclass
@@ -79,7 +83,7 @@ class VariablesClient:
         Returns:
             APIResponse with variable details
         """
-        return self.client.get(f'/core/variables/{uri}')
+        return self.client.get(f'/core/variables/{quote(uri, safe="")}')
     
     def get_variables_by_uris(self, uris: List[str]) -> APIResponse:
         """
@@ -130,7 +134,7 @@ class VariablesClient:
         Returns:
             APIResponse confirming deletion
         """
-        return self.client.delete(f'/core/variables/{uri}')
+        return self.client.delete(f'/core/variables/{quote(uri, safe="")}')
     
     def get_variable_datatypes(self) -> APIResponse:
         """

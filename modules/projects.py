@@ -118,7 +118,7 @@ class ProjectsClient:
         Returns:
             APIResponse with project details
         """
-        return self.client.get(f'/core/projects/{quote(uri, safe='')}')
+        return self.client.get(f'/core/projects/{quote(uri, safe="")}')
     
     def get_projects_by_uris(self, uris: List[str]) -> APIResponse:
         """
@@ -225,7 +225,7 @@ class ProjectsClient:
         Returns:
             APIResponse confirming deletion
         """
-        return self.client.delete(f'/core/projects/{uri}')
+        return self.client.delete(f'/core/projects/{quote(uri, safe="")}')
     
     # Experiment management methods
     def search_experiments(self, params: ExperimentSearchParams = None) -> APIResponse:
@@ -269,7 +269,7 @@ class ProjectsClient:
         Returns:
             APIResponse with experiment details
         """
-        return self.client.get(f'/core/experiments/{uri}')
+        return self.client.get(f'/core/experiments/{quote(uri, safe="")}')
     
     def create_experiment(self, experiment_data: Dict[str, Any]) -> APIResponse:
         """
@@ -305,7 +305,7 @@ class ProjectsClient:
         Returns:
             APIResponse confirming deletion
         """
-        return self.client.delete(f'/core/experiments/{uri}')
+        return self.client.delete(f'/core/experiments/{quote(uri, safe="")}')
     
     # Scientific Objects management methods
     def search_scientific_objects(self, params: ScientificObjectSearchParams = None) -> APIResponse:
@@ -353,7 +353,7 @@ class ProjectsClient:
         Returns:
             APIResponse with scientific object details
         """
-        return self.client.get(f'/core/scientific_objects/{uri}')
+        return self.client.get(f'/core/scientific_objects/{quote(uri, safe="")}')
     
     def create_scientific_object(self, object_data: Dict[str, Any]) -> APIResponse:
         """
@@ -389,7 +389,7 @@ class ProjectsClient:
         Returns:
             APIResponse confirming deletion
         """
-        return self.client.delete(f'/core/scientific_objects/{uri}')
+        return self.client.delete(f'/core/scientific_objects/{quote(uri, safe="")}')
     
     def get_scientific_objects_by_uris(self, uris: List[str]) -> APIResponse:
         """

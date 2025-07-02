@@ -11,17 +11,31 @@ from dataclasses import dataclass, asdict
 from pathlib import Path
 from get_host import SSHConfigParser
 
-def get_opensilex_base_url(host_name: str = "phis-prod") -> str:
+def get_opensilex_base_url(host_name: Optional[str] = None) -> str:
     """
     Retrieves the OpenSilex base URL from SSH config.
-    Defaults to 'opensilex-vm' host.
+    If host_name is not provided or not found, it interactively prompts the user to select a host.
     """
     ssh_parser = SSHConfigParser()
-    host_config = ssh_parser.get_host(host_name)
+    selected_host_name = host_name
+
+    if selected_host_name:
+        host_config = ssh_parser.get_host(selected_host_name)
+        if not host_config:
+            print(f"Host '{selected_host_name}' not found in SSH config. Prompting for interactive selection.")
+            selected_host_name = select_opensilex_host_interactively()
+    else:
+        selected_host_name = select_opensilex_host_interactively()
+
+    if not selected_host_name:
+        raise ValueError("No host selected. Exiting.")
+
+    host_config = ssh_parser.get_host(selected_host_name)
     if not host_config:
-        raise ValueError(f"Host '{host_name}' not found in SSH config. Please configure it in ~/.ssh/config")
-    
-    hostname = host_config.get('hostname', host_name)
+        # This case should ideally not be reached if select_opensilex_host_interactively works correctly
+        raise ValueError(f"Selected host '{selected_host_name}' not found in SSH config.")
+
+    hostname = host_config.get('hostname', selected_host_name)
     port = host_config.get('port', '28081')
     # Assuming the OpenSilex API is at /rest or /sandbox/rest
     # Adjust this path based on your OpenSilex instance's configuration

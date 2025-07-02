@@ -7,6 +7,10 @@ from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass
 from datetime import datetime
 from .base import BaseAPIClient, APIResponse
+from urllib.parse import quote
+
+from urllib.parse import quote
+
 
 
 @dataclass
@@ -150,7 +154,7 @@ class DataClient:
             APIResponse confirming update
         """
         data = {'confidence': confidence}
-        return self.client.put(f'/core/data/{uri}/confidence', data=data)
+        return self.client.put(f'/core/data/{quote(uri, safe="")}/confidence', data=data)
     
     def delete_data(self, uri: str) -> APIResponse:
         """
@@ -162,7 +166,7 @@ class DataClient:
         Returns:
             APIResponse confirming deletion
         """
-        return self.client.delete(f'/core/data/{uri}')
+        return self.client.delete(f'/core/data/{quote(uri, safe="")}')
     
     def get_data_by_uri(self, uri: str) -> APIResponse:
         """
@@ -174,7 +178,7 @@ class DataClient:
         Returns:
             APIResponse with data point details
         """
-        return self.client.get(f'/core/data/{uri}')
+        return self.client.get(f'/core/data/{quote(uri, safe="")}')
     
     def get_data_series_by_facility(self, variable: str, target: str, 
                                   start_date: str = None, end_date: str = None,

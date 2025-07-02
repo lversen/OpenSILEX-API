@@ -3,7 +3,6 @@ from modules.variables import VariableSearchParams
 from modules.projects import ProjectSearchParams
 from modules.data import DataSearchParams
 from config import get_opensilex_base_url, select_opensilex_host_interactively
-
 def main():
     # Allow user to select host
     host_name = select_opensilex_host_interactively()

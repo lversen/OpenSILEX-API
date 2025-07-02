@@ -27,3 +27,30 @@ class SSHConfigParser:
 
     def get_host(self, name):
         return self.hosts.get(name)
+
+    def select_host_ip(self):
+        host_names = list(self.hosts.keys())
+        if not host_names:
+            print("No SSH hosts found in your config file.")
+            return None
+
+        print("Available SSH Hosts:")
+        for i, name in enumerate(host_names):
+            print(f"{i + 1}. {name}")
+
+        while True:
+            try:
+                choice = int(input("Select a host by number: ")) - 1
+                if 0 <= choice < len(host_names):
+                    selected_host_name = host_names[choice]
+                    selected_host = self.hosts[selected_host_name]
+                    hostname = selected_host.get('hostname')
+                    if hostname:
+                        print(f"Selected host: {selected_host_name} (IP: {hostname})")
+                        return hostname
+                    else:
+                        print(f"Host '{selected_host_name}' does not have a 'Hostname' defined.")
+                else:
+                    print("Invalid choice. Please enter a valid number.")
+            except ValueError:
+                print("Invalid input. Please enter a number.")
