@@ -10,6 +10,12 @@ from modules.data import DataClient
 from modules.projects import ProjectsClient
 from modules.devices import DevicesClient
 from modules.organizations import OrganizationsClient
+from modules.experiments import ExperimentsClient
+from modules.facilities import FacilitiesClient
+from modules.sites import SitesClient
+from modules.persons import PersonsClient
+from modules.scientific_objects import ScientificObjectsClient
+from modules.germplasm import GermplasmClient
 
 
 class OpenSilexClient:
@@ -34,6 +40,12 @@ class OpenSilexClient:
         self.projects = ProjectsClient(self.base_client)
         self.devices = DevicesClient(self.base_client)
         self.organizations = OrganizationsClient(self.base_client)
+        self.experiments = ExperimentsClient(self.base_client)
+        self.facilities = FacilitiesClient(self.base_client)
+        self.sites = SitesClient(self.base_client)
+        self.persons = PersonsClient(self.base_client)
+        self.scientific_objects = ScientificObjectsClient(self.base_client)
+        self.germplasm = GermplasmClient(self.base_client)
     
     def authenticate(self, identifier: str, password: str) -> APIResponse:
         """
@@ -312,26 +324,6 @@ class OpenSilexClient:
             APIResponse with list of BRAPI calls
         """
         return self.base_client.get('/brapi/v1/calls')
-    
-    def search_germplasm(self, germplasm_db_id: str = None, 
-                        germplasm_pui: str = None) -> APIResponse:
-        """
-        Search for germplasm (BRAPI compatible)
-        
-        Args:
-            germplasm_db_id: Germplasm database ID
-            germplasm_pui: Germplasm PUI
-            
-        Returns:
-            APIResponse with germplasm data
-        """
-        params = {}
-        if germplasm_db_id:
-            params['germplasmDbId'] = germplasm_db_id
-        if germplasm_pui:
-            params['germplasmPUI'] = germplasm_pui
-        
-        return self.base_client.get('/brapi/v1/germplasm', params=params)
     
     def __enter__(self):
         """Context manager entry"""
