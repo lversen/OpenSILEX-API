@@ -54,7 +54,7 @@ def select_opensilex_host_interactively(non_interactive: bool = False) -> str:
     if non_interactive:
         return list(hosts.keys())[0]
 
-    print("\n📋 Available OpenSilex hosts from SSH config:")
+    print("\nAvailable OpenSilex hosts from SSH config:")
     print("=" * 50)
 
     host_list = list(hosts.keys())

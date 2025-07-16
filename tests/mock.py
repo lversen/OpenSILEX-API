@@ -5,10 +5,15 @@ Generates mock data for testing and development
 
 from faker import Faker
 from typing import List
-from modules.projects import (ProjectCreationData, ExperimentCreationData, 
-                              ScientificObjectCreationData)
+from modules.projects import ProjectCreationData
+from modules.experiments import ExperimentCreationData
+from modules.scientific_objects import ScientificObjectCreationData
 from modules.devices import DeviceCreationData
 from modules.organizations import OrganizationCreationData
+from modules.persons import PersonCreationData
+from modules.sites import SiteCreationData
+from modules.facilities import FacilityCreationData
+from modules.variables import VariableCreationData
 
 # Initialize Faker
 fake = Faker()
@@ -189,3 +194,127 @@ class MockClient:
             A list of OrganizationCreationData objects.
         """
         return [self.create_mock_organization() for _ in range(num_organizations)]
+
+    def create_mock_person(self) -> PersonCreationData:
+        """
+        Generates a single mock person.
+        
+        Returns:
+            A PersonCreationData object with mock data.
+        """
+        return PersonCreationData(
+            first_name=fake.first_name(),
+            last_name=fake.last_name(),
+            email=fake.email(),
+            affiliation=fake.company(),
+            phone_number=fake.phone_number()
+        )
+
+    def create_mock_persons(self, num_persons: int) -> List[PersonCreationData]:
+        """
+        Generates a list of mock persons.
+        
+        Args:
+            num_persons: The number of mock persons to generate.
+            
+        Returns:
+            A list of PersonCreationData objects.
+        """
+        return [self.create_mock_person() for _ in range(num_persons)]
+
+    def create_mock_site(self, organization_uris: List[str] = None) -> SiteCreationData:
+        """
+        Generates a single mock site.
+        
+        Args:
+            organization_uris: Optional list of organization URIs to attach the site to.
+            
+        Returns:
+            A SiteCreationData object with mock data.
+        """
+        return SiteCreationData(
+            name=fake.street_name(),
+            address={
+                "street": fake.street_address(),
+                "city": fake.city(),
+                "country": fake.country()
+            },
+            description=fake.text(max_nb_chars=100),
+            geometry={
+                "type": "Point",
+                "coordinates": [float(fake.longitude()), float(fake.latitude())]
+            },
+            organizations=organization_uris if organization_uris else []
+        )
+
+    def create_mock_sites(self, num_sites: int, organization_uris: List[str] = None) -> List[SiteCreationData]:
+        """
+        Generates a list of mock sites.
+        
+        Args:
+            num_sites: The number of mock sites to generate.
+            organization_uris: Optional list of organization URIs to attach the sites to.
+            
+        Returns:
+            A list of SiteCreationData objects.
+        """
+        return [self.create_mock_site(organization_uris) for _ in range(num_sites)]
+
+    def create_mock_facility(self) -> FacilityCreationData:
+        """
+        Generates a single mock facility.
+        
+        Returns:
+            A FacilityCreationData object with mock data.
+        """
+        return FacilityCreationData(
+            name=fake.word() + " Greenhouse",
+            facility_type="http://www.opensilex.org/vocabulary/oeso#Greenhouse",
+            address={
+                "street": fake.street_address(),
+                "city": fake.city(),
+                "zipCode": fake.postcode(),
+                "country": fake.country()
+            }
+        )
+
+    def create_mock_facilities(self, num_facilities: int) -> List[FacilityCreationData]:
+        """
+        Generates a list of mock facilities.
+        
+        Args:
+            num_facilities: The number of mock facilities to generate.
+            
+        Returns:
+            A list of FacilityCreationData objects.
+        """
+        return [self.create_mock_facility() for _ in range(num_facilities)]
+
+    def create_mock_variable(self) -> VariableCreationData:
+        """
+        Generates a single mock variable.
+        
+        Returns:
+            A VariableCreationData object with mock data.
+        """
+        return VariableCreationData(
+            name=fake.word(),
+            entity=fake.word(),
+            characteristic=fake.word(),
+            method=fake.word(),
+            unit=fake.word(),
+            trait=fake.word(),
+            datatype="http://www.w3.org/2001/XMLSchema#string"
+        )
+
+    def create_mock_variables(self, num_variables: int) -> List[VariableCreationData]:
+        """
+        Generates a list of mock variables.
+        
+        Args:
+            num_variables: The number of mock variables to generate.
+            
+        Returns:
+            A list of VariableCreationData objects.
+        """
+        return [self.create_mock_variable() for _ in range(num_variables)]

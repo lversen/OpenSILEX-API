@@ -247,8 +247,10 @@ class BaseAPIClient:
         """Make GET request"""
         return self._make_request(HTTPMethod.GET, endpoint, params=params)
     
-    def post(self, endpoint: str, data: Dict[str, Any] = None, params: Dict[str, Any] = None) -> APIResponse:
+    def post(self, endpoint: str, data: Any = None, params: Dict[str, Any] = None) -> APIResponse:
         """Make POST request"""
+        if hasattr(data, '__dataclass_fields__'):
+            data = data.__dict__
         return self._make_request(HTTPMethod.POST, endpoint, data=data, params=params)
     
     def put(self, endpoint: str, data: Dict[str, Any] = None, params: Dict[str, Any] = None) -> APIResponse:

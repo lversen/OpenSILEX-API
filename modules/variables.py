@@ -32,6 +32,19 @@ class EntityCreationData:
     properties: Optional[Dict[str, Any]] = None
 
 
+@dataclass
+class VariableCreationData:
+    """Data structure for creating variables"""
+    uri: Optional[str] = None
+    name: str = None
+    entity: Optional[str] = None
+    characteristic: Optional[str] = None
+    method: Optional[str] = None
+    unit: Optional[str] = None
+    trait: Optional[str] = None
+    datatype: Optional[str] = None
+
+
 class VariablesClient:
     """
     Client for managing variables and entities in OpenSilex
@@ -98,7 +111,7 @@ class VariablesClient:
         params = {'uris': uris}
         return self.client.get('/core/variables/by_uris', params=params)
     
-    def create_variable(self, variable_data: Dict[str, Any]) -> APIResponse:
+    def create_variable(self, variable_data: VariableCreationData) -> APIResponse:
         """
         Create a new variable
         
@@ -108,9 +121,26 @@ class VariablesClient:
         Returns:
             APIResponse with created variable URI
         """
-        if 'dataType' in variable_data and isinstance(variable_data['dataType'], str):
-            variable_data['dataType'] = {'uri': variable_data['dataType']}
-        return self.client.post('/core/variables', data=variable_data)
+        data = {}
+
+        if variable_data.uri:
+            data['uri'] = variable_data.uri
+        if variable_data.name:
+            data['name'] = variable_data.name
+        if variable_data.entity:
+            data['entity'] = variable_data.entity
+        if variable_data.characteristic:
+            data['characteristic'] = variable_data.characteristic
+        if variable_data.method:
+            data['method'] = variable_data.method
+        if variable_data.unit:
+            data['unit'] = variable_data.unit
+        if variable_data.trait:
+            data['trait'] = variable_data.trait
+        if variable_data.datatype:
+            data['dataType'] = {'uri': variable_data.datatype}
+
+        return self.client.post('/core/variables', data=data)
     
     def update_variable(self, variable_data: Dict[str, Any]) -> APIResponse:
         """
